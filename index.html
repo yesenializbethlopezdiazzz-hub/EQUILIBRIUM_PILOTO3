@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EQUILIBRIUM-IJC | Farmacovigilancia Oncológica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF7A00;
+            --primary-hover: #E06A00;
+            --accent-color: #00E5FF;
+            --bg-color: #140A07;
+            --surface-bg: rgba(38, 20, 13, 0.78);
+            --card-bg: rgba(46, 24, 16, 0.85);
+            --text-color: #F8FAFC;
+            --text-muted: #CBD5E1;
+            --border-color: rgba(255, 122, 0, 0.3);
+            --glow-orange: 0 0 15px rgba(255, 122, 0, 0.28);
+            --glow-cyan: 0 0 15px rgba(0, 229, 255, 0.22);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(255, 122, 0, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(0, 229, 255, 0.06) 0%, transparent 45%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #FF7A00 0%, #D05B00 100%);
+            color: #140A07;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: var(--glow-orange);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(255, 122, 0, 0.5);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
+            margin-top: 10px;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 122, 0, 0.12);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #FF4D4D 0%, #C62828 100%);
+            color: white;
+            box-shadow: 0 0 12px rgba(255, 77, 77, 0.3);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #00E5FF 0%, #0099CC 100%);
+            color: #140A07;
+            box-shadow: var(--glow-cyan);
+        }
+
+        /* Login Screen */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), var(--glow-orange);
+            max-width: 460px;
+            width: 100%;
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 122, 0, 0.35);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: rgba(20, 10, 7, 0.85);
+            color: #F8FAFC;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2);
+        }
+
+        .form-control option {
+            background-color: #26140D;
+            color: #F8FAFC;
+        }
+
+        /* Main App Layout (Top Nav) */
+        #app-screen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(20, 10, 7, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo h2 {
+            font-size: 20px;
+            margin: 0;
+            background: linear-gradient(90deg, #FFFFFF, #FF7A00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .nav-item:hover {
+            color: var(--primary-color);
+            background: rgba(255, 122, 0, 0.1);
+            border-color: rgba(255, 122, 0, 0.3);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 122, 0, 0.18);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: var(--glow-orange);
+        }
+
+        /* Patient Bar */
+        .patient-bar {
+            background: linear-gradient(90deg, rgba(38, 20, 13, 0.95), rgba(50, 26, 16, 0.95));
+            border-bottom: 1px solid rgba(0, 229, 255, 0.35);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .patient-bar-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .patient-status-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(0, 229, 255, 0.15);
+            border: 1px solid var(--accent-color);
+            color: #80D8FF;
+            white-space: nowrap;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 28px 32px;
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 860px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: 18px;
+            }
+        }
+
+        /* Cards & Alerts */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .metric-card h4 {
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .result-banner {
+            background: linear-gradient(135deg, rgba(255, 122, 0, 0.2) 0%, rgba(200, 80, 0, 0.3) 100%);
+            border: 1px solid var(--primary-color);
+            box-shadow: var(--glow-orange);
+            color: white;
+            padding: 22px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .result-banner h1 {
+            color: var(--primary-color);
+            text-shadow: 0 0 12px rgba(255, 122, 0, 0.5);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border: 1px solid transparent;
+        }
+
+        .alert-error {
+            background: rgba(211, 47, 47, 0.15);
+            border-color: rgba(255, 82, 82, 0.4);
+            border-left: 4px solid #FF5252;
+            color: #FFCDD2;
+        }
+
+        .alert-warning {
+            background: rgba(255, 160, 0, 0.14);
+            border-color: rgba(255, 179, 0, 0.35);
+            border-left: 4px solid #FFB300;
+            color: #FFE082;
+        }
+
+        .alert-info {
+            background: rgba(255, 122, 0, 0.1);
+            border-color: rgba(255, 122, 0, 0.3);
+            border-left: 4px solid var(--primary-color);
+            color: #FFE0B2;
+        }
+
+        .alert-success {
+            background: rgba(56, 142, 60, 0.18);
+            border-color: rgba(105, 240, 174, 0.35);
+            border-left: 4px solid #69F0AE;
+            color: #C8E6C9;
+        }
+
+        .section-subtitle {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 6px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .detail-row {
+            margin-bottom: 10px;
+            font-size: 14px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .detail-row strong {
+            color: var(--primary-color);
+        }
+
+        /* Badges & Saved Schemes */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255, 122, 0, 0.15);
+            border: 1px solid rgba(255, 122, 0, 0.4);
+            color: var(--primary-color);
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+
+        .badge-manual {
+            background: rgba(0, 229, 255, 0.15);
+            color: #80D8FF;
+            border: 1px solid var(--accent-color);
+        }
+
+        .saved-scheme-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin: 15px 0;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 14px;
+        }
+
+        th {
+            background: rgba(255, 122, 0, 0.18);
+            color: var(--primary-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Expander */
+        details {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+        }
+
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        details[open] summary {
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin: 10px 0 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(38, 20, 13, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--primary-color);
+            color: #F8FAFC;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), var(--glow-orange);
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        /* Print Styles for Clinical Reports */
+        @media print {
+            body {
+                background: #FFFFFF !important;
+                color: #1E293B !important;
+            }
+            .top-navbar, .patient-bar, .btn, #login-screen, #toast-container, #drug-search, #drug-type-filter {
+                display: none !important;
+            }
+            .main-content {
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            .glass-card, .detail-row, .metric-card, table, details {
+                background: #FFFFFF !important;
+                color: #1E293B !important;
+                border: 1px solid #CBD5E1 !important;
+                box-shadow: none !important;
+            }
+            h1, h2, h3, h4, strong {
+                color: #0F172A !important;
+            }
+            .alert {
+                background: #F8FAFC !important;
+                color: #1E293B !important;
+                border: 1px solid #CBD5E1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- PANTALLA DE LOGIN -->
+<div id="login-screen">
+    <svg width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="background: rgba(255, 122, 0, 0.1); padding: 14px; border-radius: 50%; border: 1px solid rgba(255, 122, 0, 0.4); box-shadow: 0 0 25px rgba(255, 122, 0, 0.3); margin-bottom: 14px;">
+        <circle cx="12" cy="12" r="3" fill="#FF7A00" fill-opacity="0.25"></circle>
+        <circle cx="12" cy="3" r="2" fill="#00E5FF"></circle>
+        <circle cx="12" cy="21" r="2" fill="#00E5FF"></circle>
+        <circle cx="3" cy="12" r="2" fill="#00E5FF"></circle>
+        <circle cx="21" cy="12" r="2" fill="#00E5FF"></circle>
+        <line x1="12" y1="5" x2="12" y2="9"></line>
+        <line x1="12" y1="15" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="9" y2="12"></line>
+        <line x1="15" y1="12" x2="19" y2="12"></line>
+    </svg>
+    <h1 style="font-size: 38px; letter-spacing: 2px;">EQUILIBRIUM-IJC</h1>
+    <h4 style="max-width: 760px; color: var(--text-muted); font-weight: 400;">
+        Evaluación de Química, Uso e Incompatibilidades de Liofilizados en Interacciones y Bioestabilidad Requerida en Infusiones y Unidades de Mezclas
+    </h4>
+
+    <div class="login-box">
+        <h3 style="color: var(--primary-color); font-size: 16px;">Acceso Restringido - Instituto Jalisciense de Cancerología</h3>
+        <div class="form-group" style="margin-top: 16px;">
+            <label for="password-input">Contraseña Institucional:</label>
+            <input type="password" id="password-input" class="form-control" placeholder="Ingrese la contraseña..." onkeypress="if(event.key==='Enter') login()">
+        </div>
+        <button class="btn btn-full" onclick="login()">Ingresar al Sistema</button>
+        <button class="btn btn-full btn-outline" onclick="quickLogin()">Acceso Rápido de Prueba (IJC2026*)</button>
+        <div id="login-error" class="alert alert-error" style="display: none; margin-top: 12px;">
+            Contraseña incorrecta. Por favor intente de nuevo.
+        </div>
+    </div>
+</div>
+
+<!-- APLICACIÓN PRINCIPAL -->
+<div id="app-screen">
+    <!-- MENÚ SUPERIOR FIJO -->
+    <header class="top-navbar">
+        <div class="brand-logo">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="background: rgba(255,122,0,0.1); padding: 6px; border-radius: 50%; border: 1px solid rgba(255,122,0,0.4);">
+                <circle cx="12" cy="12" r="3" fill="#FF7A00" fill-opacity="0.2"></circle>
+                <circle cx="12" cy="3" r="2" fill="#00E5FF"></circle>
+                <circle cx="12" cy="21" r="2" fill="#00E5FF"></circle>
+                <circle cx="3" cy="12" r="2" fill="#00E5FF"></circle>
+                <circle cx="21" cy="12" r="2" fill="#00E5FF"></circle>
+                <line x1="12" y1="5" x2="12" y2="9"></line>
+                <line x1="12" y1="15" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="9" y2="12"></line>
+                <line x1="15" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <div>
+                <h2>EQUILIBRIUM-IJC</h2>
+                <small style="color: var(--text-muted); font-size: 11px;">Farmacovigilancia Oncológica</small>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <button class="nav-item active" onclick="showSection('consulta', this)">🔍 Consulta de Fármacos</button>
+            <button class="nav-item" onclick="showSection('calculadora', this)">📐 Calculadora de Dosificación</button>
+            <button class="nav-item" onclick="showSection('verificador', this)">💊 Verificador de Esquemas</button>
+            <button class="nav-item" onclick="showSection('anadir', this)">➕ Añadir Medicamento</button>
+            <button class="nav-item" onclick="showSection('autores', this)">👥 Autores y Bibliografía</button>
+        </nav>
+
+        <button class="btn btn-sm btn-danger" onclick="logout()">Cerrar Sesión 🔓</button>
+    </header>
+
+    <!-- BARRA DE EXPEDIENTE DE PACIENTE ACTIVO -->
+    <div class="patient-bar">
+        <div class="patient-bar-group">
+            <span style="font-size: 13px; font-weight: 700; color: var(--accent-color); text-transform: uppercase;">🩺 Expediente Activo:</span>
+            <input type="text" id="patient-id-input" class="form-control" style="max-width: 280px;" placeholder="ID / Nombre (ej. EXP-2026-001 - Juan Pérez)">
+            <button type="button" class="btn btn-sm btn-accent" onclick="activatePatient()">Guardar / Activar Paciente</button>
+            <select id="patient-select" class="form-control" style="max-width: 240px;" onchange="selectSavedPatient()">
+                <option value="">-- Pacientes Guardados --</option>
+            </select>
+        </div>
+        <div id="active-patient-pill" class="patient-status-pill">Sin paciente activo (modo temporal)</div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+
+        <!-- 1. CONSULTA DE FÁRMACOS -->
+        <section id="sec-consulta" class="section active">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <h1>🔍 Consulta y Ficha Técnica de Fármacos</h1>
+                    <button type="button" class="btn btn-sm btn-outline" style="margin-top: 0;" onclick="window.print()">🖨️ Imprimir Ficha</button>
+                </div>
+                <div class="grid-2" style="margin-top: 15px; align-items: end; grid-template-columns: 1fr 1fr 1fr;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="drug-search">Buscar por nombre:</label>
+                        <input type="text" id="drug-search" class="form-control" placeholder="Ej. Cisplatino, Paclitaxel..." oninput="filterDrugSelect()">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="drug-type-filter">Filtrar por categoría:</label>
+                        <select id="drug-type-filter" class="form-control" onchange="filterDrugSelect()">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="drug-select">Medicamento (orden alfabético):</label>
+                        <select id="drug-select" class="form-control" onchange="renderDrugDetails()"></select>
+                    </div>
+                </div>
+
+                <div id="drug-details-container" class="grid-2"></div>
+            </section>
+
+            <!-- 2. CALCULADORA DE DOSIFICACIÓN -->
+            <section id="sec-calculadora" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <h1>📐 Calculadora Antropométrica y de Dosificación</h1>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top: 0;" onclick="copyDoseSummary()">📋 Copiar Resumen</button>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top: 0;" onclick="window.print()">🖨️ Imprimir</button>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="glass-card">
+                        <h3>Datos del Paciente</h3>
+                        <div class="form-group">
+                            <label for="calc-peso">Peso del paciente (kg):</label>
+                            <input type="number" id="calc-peso" class="form-control" min="0.1" max="300" step="0.1" value="70.0" oninput="calculateDose()">
+                        </div>
+                        <div class="form-group">
+                            <label for="calc-talla">Altura / Talla (m):</label>
+                            <input type="number" id="calc-talla" class="form-control" min="0.3" max="2.5" step="0.01" value="1.70" oninput="calculateDose()">
+                            <small id="talla-cm-display" style="color: var(--text-muted);">Equivalente: 170.0 cm</small>
+                        </div>
+
+                        <div class="metric-card">
+                            <h4>Índice de Masa Corporal (IMC):</h4>
+                            <div class="metric-value" id="imc-val">24.22 kg/m²</div>
+                            <div id="imc-category" style="margin-top: 6px; font-size: 13px; font-weight: 600; color: #69F0AE;">Categoría: Normal</div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Superficie Corporal (Fórmula Mosteller):</h4>
+                            <div class="metric-value" id="sc-val">1.82 m²</div>
+                            <small style="color: var(--text-muted);">SC = √((Peso kg × Talla cm) / 3600)</small>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Dosificación Clínica</h3>
+                        <div class="form-group">
+                            <label for="calc-drug">Medicamento de referencia:</label>
+                            <select id="calc-drug" class="form-control" onchange="calculateDose()"></select>
+                        </div>
+
+                        <label style="font-weight: 600; font-size: 13px; color: var(--primary-color); text-transform: uppercase;">Parámetro de cálculo:</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="calc-type" value="sc" checked onchange="calculateDose()"> Superficie Corporal (mg/m²)</label>
+                            <label><input type="radio" name="calc-type" value="peso" onchange="calculateDose()"> Peso Corporal (mg/kg)</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="calc-dose">Dosis indicada por unidad:</label>
+                            <input type="number" id="calc-dose" class="form-control" min="0.1" max="5000" step="0.5" value="100.0" oninput="calculateDose()">
+                        </div>
+
+                        <div class="result-banner">
+                            <h3>Dosis Calculada Requerida:</h3>
+                            <h1 id="final-dose-val" style="font-size: 42px; margin: 6px 0;">181.81 mg</h1>
+                            <small id="formula-text" style="color: #E2E8F0;">Fórmula aplicada: 100 mg/m² × 1.82 m²</small>
+                        </div>
+
+                        <div id="calc-drug-ref" class="alert alert-info" style="margin-top: 12px; display: none;"></div>
+
+                        <div class="alert alert-warning" style="margin-top: 15px;">
+                            ⚠️ <strong>Advertencia de Validación Clínica:</strong> Verifique siempre las condiciones de toxicidad acumulativa, estado de depuración renal y recuento plaquetario antes de proceder a la preparación de la infusión.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DE RESUMEN DEL PACIENTE ACTIVO -->
+                <div class="glass-card" style="margin-top: 24px;">
+                    <h3 class="section-subtitle">📋 Tabla de Resumen de Datos del Paciente Activo</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Expediente / Paciente</th>
+                                    <th>Peso (kg)</th>
+                                    <th>Talla (m)</th>
+                                    <th>IMC</th>
+                                    <th>Superficie Corporal (m²)</th>
+                                    <th>Fármaco Seleccionado</th>
+                                    <th>Dosis Calculada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong id="summary-patient-id">Temporal (Sin expediente)</strong></td>
+                                    <td id="summary-peso">70.0 kg</td>
+                                    <td id="summary-talla">1.70 m</td>
+                                    <td id="summary-imc">24.22 kg/m²</td>
+                                    <td id="summary-sc">1.82 m²</td>
+                                    <td id="summary-drug">-</td>
+                                    <td><strong id="summary-dose" style="color: var(--primary-color);">0.00 mg</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. VERIFICADOR DE ESQUEMAS -->
+            <section id="sec-verificador" class="section">
+                <h1>💊 Verificador de Esquemas y Polifarmacia</h1>
+                <div class="grid-2" style="margin-top: 15px;">
+                    <div>
+                        <div class="form-group">
+                            <label for="scheme-name">Nombre del Esquema / Protocolo:</label>
+                            <input type="text" id="scheme-name" class="form-control" placeholder="Ej. Esquema R-CHOP + Soporte, Protocolo Mama...">
+                        </div>
+                        <div class="form-group">
+                            <label for="scheme-select">Seleccione fármacos de la base de datos (Ctrl/Cmd para varios):</label>
+                            <select id="scheme-select" class="form-control" multiple size="6" onchange="renderScheme()"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="scheme-manual-input">Ingresar otros medicamentos manualmente (no quimioterapia o externos):</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="scheme-manual-input" class="form-control" placeholder="Ej. Omeprazol 40mg, Metoclopramida, Filgrastim..." onkeypress="if(event.key==='Enter'){event.preventDefault(); addManualMedToScheme();}">
+                                <button type="button" class="btn btn-accent" onclick="addManualMedToScheme()">Agregar</button>
+                            </div>
+                        </div>
+                        <div id="manual-meds-list" style="margin-bottom: 15px; min-height: 32px;"></div>
+                        <button type="button" class="btn btn-full" onclick="saveSchemeToDB()">💾 Guardar Esquema en Base de Datos Propia</button>
+                        <div id="scheme-save-msg" style="margin-top: 10px;"></div>
+                    </div>
+                </div>
+
+                <div id="scheme-output" style="margin-top: 10px;">
+                    <div class="alert alert-info">
+                        Seleccione fármacos o ingrese medicamentos manualmente para iniciar el análisis cruzado de compatibilidades.
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; border-top: 2px solid var(--border-color); padding-top: 20px;">
+                    <h3>🗄️ Base de Datos Propia de Esquemas Guardados</h3>
+                    <div id="saved-schemes-list" style="margin-top: 12px;"></div>
+                </div>
+            </section>
+
+            <!-- 4. AÑADIR MEDICAMENTO -->
+            <section id="sec-anadir" class="section">
+                <h1>➕ Registro Dinámico de Nuevos Fármacos</h1>
+                <div class="alert alert-info" style="margin-top: 10px;">
+                    Registre manualmente los fármacos que requiera agregar de forma temporal durante esta sesión de navegación.
+                </div>
+
+                <form id="add-drug-form" onsubmit="addCustomDrug(event)">
+                    <div class="grid-2">
+                        <div>
+                            <div class="form-group"><label>Nombre del medicamento:</label><input type="text" id="add-name" class="form-control" required></div>
+                            <div class="form-group"><label>Tipo de fármaco:</label><input type="text" id="add-tipo" class="form-control" placeholder="Ej. Agentes Alquilantes, Taxanos..."></div>
+                            <div class="form-group"><label>Recomendación de reconstitución:</label><textarea id="add-reconst" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Dilución del vial liofilizado:</label><textarea id="add-dilution" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Estabilidad del vial cerrado:</label><input type="text" id="add-est-cerrado" class="form-control"></div>
+                            <div class="form-group"><label>Estabilidad de la mezcla:</label><input type="text" id="add-est-mezcla" class="form-control"></div>
+                            <div class="form-group"><label>Dosis máxima guía:</label><input type="text" id="add-max-dose" class="form-control"></div>
+                        </div>
+                        <div>
+                            <div class="form-group"><label>Tiempo de infusión:</label><input type="text" id="add-inf-time" class="form-control"></div>
+                            <div class="form-group"><label>Excipientes:</label><input type="text" id="add-excipientes" class="form-control"></div>
+                            <div class="form-group"><label>Contraindicaciones:</label><textarea id="add-contraindic" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Interacciones:</label><textarea id="add-interact" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Incompatibilidades:</label><textarea id="add-incompat" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Reacciones adversas:</label><textarea id="add-adv" class="form-control" rows="2"></textarea></div>
+                            <div class="form-group"><label>Premedicación requerida:</label><textarea id="add-premed" class="form-control" rows="2"></textarea></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 10px;">Agregar a la plataforma 💾</button>
+                </form>
+                <div id="add-drug-msg" style="margin-top: 12px;"></div>
+            </section>
+
+            <!-- 5. AUTORES Y BIBLIOGRAFÍA -->
+            <section id="sec-autores" class="section">
+                <h1>👥 Autores y Colaboradores</h1>
+                <div class="grid-2">
+                    <div class="detail-row" style="padding: 20px;">
+                        <h3 class="section-subtitle">Comité Científico y Desarrolladores</h3>
+                        <ul style="padding-left: 20px; line-height: 2;">
+                            <li><strong>LQFBT. Yesenia Lizbeth Lopez Diaz</strong></li>
+                            <li><strong>LQFBT. Angel Gabriel Aceves Tamayo</strong></li>
+                            <li><strong>LQFBT. Erick Vazquez Perez</strong></li>
+                            <li><strong>LQFBT. Alyson Alejandria Perez Reyes</strong></li>
+                            <li><strong>Lic. oncóloga Jocelyn Karina Ramos Barajas</strong></li>
+                            <li><strong>Enfermera Oncóloga. Mónica Elizabeth Nuño Basulto</strong></li>
+                            <li><strong>QFB Yubal Alejandro Alfaro Ramírez</strong></li>
+                            <li><strong>Lic. Enfermería. Gabriel Avalos Alcántara</strong></li>
+                            <li><strong>Dr. José Alfonso Cruz Ramos</strong></li>
+                        </ul>
+                    </div>
+                    <div class="detail-row" style="padding: 20px;">
+                        <h3 class="section-subtitle">📚 Bibliografía de Referencia</h3>
+                        <ol style="padding-left: 20px; line-height: 1.8; font-size: 14px;">
+                            <li><strong>Diccionario de Especialidades en Oncología PLM (México)</strong>, S.A, Octava Edición 2017.</li>
+                            <li><strong>Product Information:</strong> mitoxantrone IV injection, mitoxantrone IV injection. Teva Parenteral Medicines Inc, Irvine, CA, 2009. Citado en: <a href="https://www.micromedexsolutions.com" target="_blank">Micromedex Solutions</a>.</li>
+                            <li><strong>Martin, M. (2015).</strong> <em>nab-Paclitaxel dose and schedule in breast cancer.</em> PubMed Central (PMC). <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4465168/" target="_blank">PMC4465168</a>.</li>
+                            <li><strong>Abraxane (paclitaxel protein bound)</strong> <em>dosing, indications, interactions, adverse effects, and more.</em> (2020, 27 agosto). Medscape. <a href="https://reference.medscape.com/drug/abraxane-paclitaxel-protein-bound-999775" target="_blank">Medscape reference</a>.</li>
+                            <li><strong>Agencia Española de Medicamentos y Productos Sanitarios.</strong> (2026). Centro de Información Online de Medicamentos (CIMA). <a href="https://cima.aemps.es/cima/publico/home.html" target="_blank">CIMA AEMPS</a>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    const defaultData = [
+        {
+            "Nombre del medicamento": "5-FLUOROURACILO",
+            "tipo de fármaco": "Antimetabolitos",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250mL/500mL/1000mL INFUSOR",
+            "dilución del vial liofilizado": "Fco. 250mg/10ml | 500mg/10ml",
+            "estabilidad del vial cerrado": "Temp. Ambiente. FOTOSENSIBLE. NO REFRIGERAR",
+            "estabilidad de la mezcla": "Solución preparada a Temp. Amb.: 72 hrs | Vial: 24 hrs. EQUIPO RADIOPACO",
+            "dosis máxima guía": "DU BOLO: 1500 mg | INFUSOR: 5000 mg",
+            "tiempo de infusión": "30´ / 24 hrs / 48 hrs",
+            "excipientes": "Hidróxido de sodio, Ácido clorhídrico, Agua para preparaciones inyectables",
+            "contraindicaciones": "Hipersensibilidad, infecciones graves, depresión de médula ósea, déficit de DPD, uso reciente de brivudina/sorivudina, lactancia.",
+            "interacciones": "Brivudina/sorivudina (contraindicado), ácido folínico (aumenta toxicidad), cimetidina, metronidazol, fenitoína, warfarina.",
+            "incompatibilidades": "Incompatible con folinato cálcico, carboplatino, cisplatino, citarabina, diazepam, doxorrubicina, ondansetrón.",
+            "reacciones adversas": "Mielosupresión, mucositis, estomatitis, diarrea acuosa, síndrome mano-pie, alopecia, cardiotoxicidad.",
+            "premedicación requerida": "Individual: Ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "ACIDO FOLINICO",
+            "tipo de fármaco": "Citoprotectores",
+            "recomendación de reconstitución": "Sol. Glucosada 5% 250mL (<100mg) / 500mL (>100mg)",
+            "dilución del vial liofilizado": "Fco/ámpula 50mg/4ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Vial y sol. Refrigeración 2-8°C: 24 hrs",
+            "dosis máxima guía": "800 mg",
+            "tiempo de infusión": "30´ a 90´",
+            "excipientes": "Cloruro de sodio, Hidróxido de sodio",
+            "contraindicaciones": "Hipersensibilidad, anemia perniciosa por deficiencia de vitamina B12.",
+            "interacciones": "Aumenta eficacia y toxicidad del 5-fluorouracilo. Reduce efecto de antiepilépticos.",
+            "incompatibilidades": "Precipita con droperidol, fluorouracilo y foscarnet en la misma perfusión.",
+            "reacciones adversas": "Reacciones de hipersensibilidad, broncoespasmo, disgeusia, urticaria.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "ATEZOLIZUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250mL",
+            "dilución del vial liofilizado": "Fco. 1200mg/20ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "2-8°C: 24 hrs | Temp. Amb. (≤30°C): 8 hrs",
+            "dosis máxima guía": "1200 mg cada 3 semanas",
+            "tiempo de infusión": "90´ primera dosis | 45´ subsecuentes",
+            "excipientes": "L-histidina, Ácido acético glacial, Sucrosa, Polisorbato 20",
+            "contraindicaciones": "Hipersensibilidad al atezolizumab o excipientes.",
+            "interacciones": "Evitar corticosteroides sistémicos antes de iniciar tratamiento.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Fatiga, disminución del apetito, náuseas, tos, disnea, hipotiroidismo, neumonitis, colitis inmunomediada.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "BENDAMUSTINA",
+            "tipo de fármaco": "Agentes Alquilantes",
+            "recomendación de reconstitución": "Exclusivo en Sol. NaCl 0.9%",
+            "dilución del vial liofilizado": "100mg/4ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Temp. Amb.: 3.5 hrs | Refrigeración 2-8°C: 2 días",
+            "dosis máxima guía": "280 mg/m²",
+            "tiempo de infusión": "30´",
+            "excipientes": "Manitol",
+            "contraindicaciones": "Hipersensibilidad, lactancia, insuficiencia hepática grave, supresión medular grave, cirugía mayor reciente.",
+            "interacciones": "Otros mielosupresores, ciclosporina, tacrolimus, inhibidores de CYP1A2 (fluvoxamina, ciprofloxacino).",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Leucopenia, trombocitopenia, anemia, náuseas, vómitos, fatiga, fiebre, infecciones.",
+            "premedicación requerida": "Según esquema (ej. con rituximab: paracetamol y difenhidramina)."
+        },
+        {
+            "Nombre del medicamento": "BEVACIZUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250 mL",
+            "dilución del vial liofilizado": "Fco. 400mg/16ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8 °C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "Sol. y Vial en refrigeración 2-8 °C: 24 hrs",
+            "dosis máxima guía": "1200 mg",
+            "tiempo de infusión": "90´ primera vez | 60´ subsecuentes",
+            "excipientes": "Trehalosa dihidrato, Fosfato disódico, Polisorbato 20",
+            "contraindicaciones": "Hipersensibilidad a células CHO, embarazo.",
+            "interacciones": "No se observaron interacciones farmacocinéticas relevantes con quimioterapia estándar.",
+            "incompatibilidades": "No administrar ni mezclar con soluciones de glucosa (suero glucosado).",
+            "reacciones adversas": "Hipertensión, proteinuria, hemorragias, tromboembolismo venoso, retraso en la cicatrización de heridas.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "BLEOMICINA",
+            "tipo de fármaco": "Productos Naturales",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250 mL",
+            "dilución del vial liofilizado": "30 mg / 5 mL",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C",
+            "estabilidad de la mezcla": "Sol. Diluida en refrigeración 2-8 °C: 24 hrs",
+            "dosis máxima guía": "30-45 UI DU",
+            "tiempo de infusión": "30´",
+            "excipientes": "Hidróxido de sodio, Ácido clorhídrico",
+            "contraindicaciones": "Hipersensibilidad, ataxia telangiectasia, infección pulmonar o lesión pulmonar previa, lactancia.",
+            "interacciones": "Cisplatino, oxígeno (riesgo de toxicidad pulmonar), radioterapia, alcaloides de la vinca.",
+            "incompatibilidades": "No mezclar con aminoácidos, riboflavina, ácido ascórbico, dexametasona, furosemida, hidrocortisona, metotrexato.",
+            "reacciones adversas": "Neumonía intersticial, fibrosis pulmonar, pigmentación flagelada, mucositis, fiebre, escalofríos.",
+            "premedicación requerida": "Individual: Paracetamol y dexametasona o hidrocortisona."
+        },
+        {
+            "Nombre del medicamento": "CARBOPLATINO",
+            "tipo de fármaco": "Derivados Del Platino",
+            "recomendación de reconstitución": "Sol. Glucosada 5% 500mL",
+            "dilución del vial liofilizado": "150 mg/15 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Vial y sol. Diluida Temp Amb.: 8 hrs | Refrigeración 2-8°C: 24 hrs",
+            "dosis máxima guía": "1100 mg",
+            "tiempo de infusión": "45 a 60´",
+            "excipientes": "Agua para preparaciones inyectables",
+            "contraindicaciones": "Hipersensibilidad al platino, insuficiencia renal grave (< 30 ml/min), mielosupresión grave, tumores sangrantes, lactancia.",
+            "interacciones": "Vacuna de fiebre amarilla, fármacos nefrotóxicos o mielotóxicos, anticoagulantes orales.",
+            "incompatibilidades": "Reacciona con el aluminio metálico formando un precipitado oscuro.",
+            "reacciones adversas": "Trombocitopenia, neutropenia, anemia, náuseas, vómitos, neuropatía periférica leve.",
+            "premedicación requerida": "Individual: Ondansetrón y dexametasona."
+        },
+        {
+            "Nombre del medicamento": "CETUXIMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250mL (AFORAR)",
+            "dilución del vial liofilizado": "Fco. 100mg/20ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "Vial y sol. Diluida en refrigeración 2-8°C: 24 hrs",
+            "dosis máxima guía": "900 mg o sin diluir",
+            "tiempo de infusión": "60 a 90´",
+            "excipientes": "Cloruro de sodio, Glicina, Polisorbato 80, Ácido cítrico",
+            "contraindicaciones": "Hipersensibilidad grado 3 o 4, CCRm con RAS mutado en combinación con oxaliplatino.",
+            "interacciones": "No altera farmacocinética de irinotecán u oxaliplatino.",
+            "incompatibilidades": "Solo diluir en NaCl 0.9%.",
+            "reacciones adversas": "Reacciones cutáneas acneiformes, paroniquia, diarrea, reacciones relacionadas con perfusión, hipomagnesemia.",
+            "premedicación requerida": "Individual: Difenhidramina, hidrocortisona y Polaramine."
+        },
+        {
+            "Nombre del medicamento": "CICLOFOSFAMIDA",
+            "tipo de fármaco": "Agentes Alquilantes",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 500mL",
+            "dilución del vial liofilizado": "200 mg/10mL 500 mg/20mL",
+            "estabilidad del vial cerrado": "Refrigeración: 2-8 °C",
+            "estabilidad de la mezcla": "Sol. Diluida refrigeración 2-8 °C: 6 días | Vial a temp. Amb.: 24 hrs.",
+            "dosis máxima guía": "DU: 2500 mg | Diario total de 3-5 días = 1500 mg",
+            "tiempo de infusión": "45 a 60´",
+            "excipientes": "Propilenglicol (E1520), Macrogol, Monotioglicerol, Etanol anhidro",
+            "contraindicaciones": "Hipersensibilidad a la ciclofosfamida, infecciones agudas, aplasia de la médula ósea, infección urinaria, toxicidad urotelial aguda, obstrucción del flujo urinario, lactancia.",
+            "interacciones": "Disminuyen la eficacia: aprepitant, bupropión, ciprofloxacino, cloranfenicol, fluconazol, itraconazol, ondansetrón. Aumentan la toxicidad: alopurinol, azatioprina, fenitoína, fenobarbital, rifampicina. Cardiotoxicidad: doxorrubicina, trastuzumab.",
+            "incompatibilidades": "NO APLICA",
+            "reacciones adversas": "Mielosupresión, leucopenia, neutropenia, anemia, inmunosupresión, alopecia, náuseas, vómitos, diarrea, mucositis, cistitis hemorrágica, hematuria.",
+            "premedicación requerida": "Individual: ondansetrón. Esquema AC: ondansetrón + 100 mL de solución fisiológica."
+        },
+        {
+            "Nombre del medicamento": "CISPLATINO",
+            "tipo de fármaco": "Derivados Del Platino",
+            "recomendación de reconstitución": "Exclusivo en Sol. NaCl 0.9% 500 mL (< 80 mg) / 1000 mL (> 80 mg)",
+            "dilución del vial liofilizado": "Sol. Inyectable o 1:1",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ. NO REFRIGERAR",
+            "estabilidad de la mezcla": "Vial y sol. Diluida Temp Amb.: 24 hrs. NO REFRIGERAR",
+            "dosis máxima guía": "220 mg",
+            "tiempo de infusión": "60 a 120´",
+            "excipientes": "Manitol (E-421), Cloruro de sodio, Ácido clorhídrico, Hidróxido de sodio.",
+            "contraindicaciones": "Hipersensibilidad al platino, disfunción renal (depuración < 60 ml/min), deshidratación, mielosupresión, deterioro auditivo, lactancia.",
+            "interacciones": "Sustancias nefrotóxicas y ototóxicas (aminoglucósidos, anfotericina B, furosemida), paclitaxel, litio, fenitoína.",
+            "incompatibilidades": "Reacciona con el aluminio (precipitado negro). Evitar agujas/catéteres con aluminio. Incompatible con antioxidantes y bicarbonatos.",
+            "reacciones adversas": "Nefrotoxicidad, ototoxicidad, mielosupresión, náuseas y vómitos intensos, neuropatía periférica, hipomagnesemia.",
+            "premedicación requerida": "Individual: Ondansetrón + Manitol 50 mL antes y después."
+        },
+        {
+            "Nombre del medicamento": "CITARABINA",
+            "tipo de fármaco": "Antimetabolitos",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 1000 mL (>4g) / 500mL (<3.5g)",
+            "dilución del vial liofilizado": "Según dosis",
+            "estabilidad del vial cerrado": "Temp. Ambiente. NO REFRIGERAR",
+            "estabilidad de la mezcla": "Sol. Diluida a Temp. Amb.: 24 hrs. NO REFRIGERAR",
+            "dosis máxima guía": "5 gr",
+            "tiempo de infusión": "3 horas",
+            "excipientes": "Hidróxido de sodio",
+            "contraindicaciones": "Hipersensibilidad, mielosupresión preexistente.",
+            "interacciones": "Digoxina (disminuye niveles), gentamicina, fluorocitosina, metotrexato intratecal.",
+            "incompatibilidades": "Incompatible con heparina, insulina, 5-FU, penicilinas, metilprednisolona.",
+            "reacciones adversas": "Mielosupresión, síndrome de la citarabina (fiebre, mialgia, erupción), estomatitis, neurotoxicidad a dosis altas.",
+            "premedicación requerida": "Ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "DACARBAZINA",
+            "tipo de fármaco": "Agentes Alquilantes",
+            "recomendación de reconstitución": "Sol. Glucosada 5% 1000mL (monoterapia) / 500mL (combinada)",
+            "dilución del vial liofilizado": "200 mg/10mL",
+            "estabilidad del vial cerrado": "Refrigeración: 2-8 °C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Sol. Diluida en refrigeración: 72 hrs (2-8°C) o Temp Amb.: 8 hrs",
+            "dosis máxima guía": "DOSIS SEMANAL 2500mg",
+            "tiempo de infusión": "60´",
+            "excipientes": "Ácido cítrico anhidro y manitol.",
+            "contraindicaciones": "Hipersensibilidad, embarazo y lactancia, leucopenia y/o trombocitopenia, enfermedades hepáticas o renales graves.",
+            "interacciones": "Fotemustina (contraindicado por toxicidad pulmonar aguda), fenitoína, anticoagulantes orales, ciclosporina, tacrolimus, vacunas vivas.",
+            "incompatibilidades": "Químicamente incompatible con heparina, hidrocortisona, L-cisteína y bicarbonato sódico.",
+            "reacciones adversas": "Anemia, leucopenia, trombocitopenia, anorexia, náuseas, vómitos, alopecia, fotosensibilidad, síndrome de Budd-Chiari.",
+            "premedicación requerida": "Individual: ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "DENOSUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Listo para usar (Subcutáneo)",
+            "dilución del vial liofilizado": "Vial 120mg/1.7mL | Jeringa 120mg/1.0mL",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ. NO CONGELAR",
+            "estabilidad de la mezcla": "Temp. Amb. máx 4 hrs | 2-8°C: 24 hrs",
+            "dosis máxima guía": "180 mg cada 4 semanas",
+            "tiempo de infusión": "5´",
+            "excipientes": "Ácido acético glacial, Hidróxido sódico, Sorbitol, Polisorbato 20",
+            "contraindicaciones": "Hipersensibilidad, hipocalcemia.",
+            "interacciones": "Sin interacciones farmacocinéticas relevantes.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Dolor musculoesquelético, hipocalcemia, osteonecrosis mandibular, infecciones urinarias/respiratorias.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "DEXRAZOXANE",
+            "tipo de fármaco": "Citoprotectores",
+            "recomendación de reconstitución": "Sol. Hartman 500 ml",
+            "dilución del vial liofilizado": "500 mg/25mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente",
+            "estabilidad de la mezcla": "Administrar dentro de las 4 hrs posteriores (2-8°C)",
+            "dosis máxima guía": "1000 mg",
+            "tiempo de infusión": "30´",
+            "excipientes": "Cloruro de sodio, Cloruro de potasio, Lactato/Acetato",
+            "contraindicaciones": "Hipersensibilidad, lactancia, vacuna fiebre amarilla.",
+            "interacciones": "Vacunas vivas, fenitoína, ciclosporina, tacrolimus.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Náuseas, dolor en punto de inyección, mielosupresión aditiva, fatiga.",
+            "premedicación requerida": "N/A"
+        },
+        {
+            "Nombre del medicamento": "DOCETAXEL",
+            "tipo de fármaco": "Taxanos",
+            "recomendación de reconstitución": "Sol. Glucosada 5% 500 mL",
+            "dilución del vial liofilizado": "Fco. Ámpula con Diluyente incluido",
+            "estabilidad del vial cerrado": "Refrigeración: 2-8 °C. NO AGITAR",
+            "estabilidad de la mezcla": "Vial reconstituido: 8 hrs (2-8 °C). Solución preparada: 4 hrs (Temp. Amb.)",
+            "dosis máxima guía": "180 mg",
+            "tiempo de infusión": "90´ (Secuencial)",
+            "excipientes": "Polisorbato 80, Etanol anhidro, Ácido cítrico anhidro",
+            "contraindicaciones": "Hipersensibilidad, neutrófilos < 1.500 células/mm3, insuficiencia hepática grave.",
+            "interacciones": "Inhibidores potentes del CYP3A4 (ketoconazol, itraconazol, claritromicina) aumentan toxicidad. Carboplatino aumenta aclaramiento.",
+            "incompatibilidades": "Este medicamento no debe mezclarse con otros.",
+            "reacciones adversas": "Neutropenia, neutropenia febril, alopecia, retención de líquidos, neuropatía periférica, estomatitis, diarrea.",
+            "premedicación requerida": "Individual: Dexametasona y difenhidramina."
+        },
+        {
+            "Nombre del medicamento": "DOXORRUBICINA",
+            "tipo de fármaco": "Antraciclinas",
+            "recomendación de reconstitución": "Sol. Glucosada 5% 250mL (< 50 mg) / 500 mL (≥ 50 mg)",
+            "dilución del vial liofilizado": "50 mg/25 mL | 10mg/5 mL",
+            "estabilidad del vial cerrado": "Refrigeración: 2-8 °C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Vial RU: 24 hrs (2-8°C). Sol. Preparada administrar inmediatamente",
+            "dosis máxima guía": "180 mg",
+            "tiempo de infusión": "45 a 60´",
+            "excipientes": "Cloruro de sodio, Ácido clorhídrico, Agua para preparaciones inyectables",
+            "contraindicaciones": "Hipersensibilidad, mielosupresión persistente, dosis máximas acumuladas previas, insuficiencia hepática grave, insuficiencia cardíaca.",
+            "interacciones": "Otras antraciclinas, ciclofosfamida, paclitaxel, trastuzumab (aumenta cardiotoxicidad), ciclosporina, sorafenib.",
+            "incompatibilidades": "No debe mezclarse con heparina (precipita) ni con 5-fluorouracilo (degradación).",
+            "reacciones adversas": "Cardiotoxicidad, insuficiencia cardíaca congestiva, mielosupresión, alopecia, estomatitis, náuseas, vómitos, cromaturia (orina roja).",
+            "premedicación requerida": "Según esquema (ej. AC: ondansetrón)."
+        },
+        {
+            "Nombre del medicamento": "DOXORRUBICINA LIPOSOMAL PEGILADA",
+            "tipo de fármaco": "Antraciclinas",
+            "recomendación de reconstitución": "EXCLUSIVO EN Sol. Glucosada 5% 250 mL (<90mg) / 500 mL (>90mg)",
+            "dilución del vial liofilizado": "Fco. 20mg/10ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Administrar inmediatamente o 2-8°C: 24 hrs",
+            "dosis máxima guía": "90 mg",
+            "tiempo de infusión": "90´",
+            "excipientes": "MPEG-DSPE, HSPC, Colesterol, Sulfato de amonio, Sacarosa, Histidina",
+            "contraindicaciones": "Hipersensibilidad al principio activo, cacahuete o soja.",
+            "interacciones": "Ciclofosfamida, taxanos, 6-mercaptopurina, agentes mielotóxicos.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Síndrome mano-pie (eritrodisestesia palmo-plantar), estomatitis, mielosupresión, reacciones relacionadas con la perfusión.",
+            "premedicación requerida": "Individual: Ondansetrón, dexametasona y difenhidramina."
+        },
+        {
+            "Nombre del medicamento": "EPIRUBICINA",
+            "tipo de fármaco": "Antraciclinas",
+            "recomendación de reconstitución": "Sol. Glucosada 5% 500mL",
+            "dilución del vial liofilizado": "50 mg/25 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Sol. Diluida a temp Amb.: 24 hrs o Refrigeración 2-8 °C: 48 hrs",
+            "dosis máxima guía": "150 mg",
+            "tiempo de infusión": "45 a 60´",
+            "excipientes": "Ácido clorhídrico, cloruro de sodio, agua para preparaciones inyectables",
+            "contraindicaciones": "Hipersensibilidad, lactancia, mielosupresión persistente, insuficiencia hepática o cardíaca grave.",
+            "interacciones": "Cimetidina (aumenta AUC 50%), paclitaxel (separar 24 hrs), trastuzumab (cardiotoxicidad).",
+            "incompatibilidades": "No mezclar con heparina ni soluciones de pH alcalino.",
+            "reacciones adversas": "Mielosupresión, cardiotoxicidad, alopecia, mucositis, náuseas, vómitos, cromaturia.",
+            "premedicación requerida": "Ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "ERIBULINA",
+            "tipo de fármaco": "Productos Naturales",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 50 mL",
+            "dilución del vial liofilizado": "1mg/2ml",
+            "estabilidad del vial cerrado": "Temp. Ambiente",
+            "estabilidad de la mezcla": "NaCl 0.9%: hasta 72 hrs entre 2°C y 8°C",
+            "dosis máxima guía": "7.6 mg",
+            "tiempo de infusión": "10´",
+            "excipientes": "Etanol anhidro, Agua para preparaciones inyectables",
+            "contraindicaciones": "Hipersensibilidad, lactancia.",
+            "interacciones": "Inhibidor leve de CYP3A4 (precaución con fármacos de estrecho margen terapéutico).",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Neutropenia, leucopenia, anemia, neuropatía periférica, fatiga, alopecia, náuseas.",
+            "premedicación requerida": "Ondansetrón y dexametasona."
+        },
+        {
+            "Nombre del medicamento": "ETOPOSIDO",
+            "tipo de fármaco": "Inhibidores De La Topoisomerasa",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 500mL",
+            "dilución del vial liofilizado": "Fco. 100mg/5ml",
+            "estabilidad del vial cerrado": "Temp ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "VIAL: Refrigeración 2-8 °C: 24 hrs. Hecha la mezcla administrar de inmediato. EQUIPO RADIOPACO",
+            "dosis máxima guía": "Por día = 200 mg (BEP) | DU = 400 mg",
+            "tiempo de infusión": "60´",
+            "excipientes": "Etanol 96.7%, ácido cítrico anhidro, alcohol bencílico, polisorbato 80, macrogol 300.",
+            "contraindicaciones": "Hipersensibilidad, vacuna contra la fiebre amarilla, lactancia.",
+            "interacciones": "Ciclosporina (aumenta exposición 80%), cisplatino, fenitoína, warfarina (eleva INR).",
+            "incompatibilidades": "Este medicamento no debe mezclarse con otros.",
+            "reacciones adversas": "Mielosupresión (leucopenia, neutropenia, anemia), náuseas, vómitos, alopecia, hipotensión si la infusión es rápida.",
+            "premedicación requerida": "Individual: Ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "GEMCITABINA",
+            "tipo de fármaco": "Antimetabolitos",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 500mL",
+            "dilución del vial liofilizado": "1 gr/19 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. NO REFRIGERAR",
+            "estabilidad de la mezcla": "Vial: 24 hrs Temp. Amb. | Sol. Diluida administrar de inmediato",
+            "dosis máxima guía": "3500 mg",
+            "tiempo de infusión": "30´",
+            "excipientes": "Ácido clorhídrico, Hidróxido de sodio",
+            "contraindicaciones": "Hipersensibilidad, lactancia.",
+            "interacciones": "Radioterapia concurrente (mucositis/neumonitis severa), vacunas vivas.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Mielosupresión, síndrome pseudogripal, edema periférico, elevación de transaminasas, erupción cutánea.",
+            "premedicación requerida": "Individual: Granisetrón (Kytril) 1 ampolla en 250-500 mL de sol. fisiológica."
+        },
+        {
+            "Nombre del medicamento": "IFOSFAMIDA",
+            "tipo de fármaco": "Agentes Alquilantes",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 1000mL",
+            "dilución del vial liofilizado": "1 gr / 9 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Vial y sol. Diluida a temp. Amb.: 24 hrs o Refrigeración 2-8 °C: 48 hrs",
+            "dosis máxima guía": "DU: 9 gr | SEMANAL TOTAL = 15 gr",
+            "tiempo de infusión": "4 horas",
+            "excipientes": "Ninguno.",
+            "contraindicaciones": "Hipersensibilidad, función gravemente alterada de la médula ósea, cistitis, insuficiencia renal y/u obstrucciones del flujo urinario, infecciones activas, embarazo y lactancia.",
+            "interacciones": "Inhibidores de la ECA, Carboplatino, Cisplatino, Antraciclinas, Amiodarona, Aminoglucósidos, Anfotericina B, Carbamazepina, Corticosteroides, Rifampicina, Warfarina.",
+            "incompatibilidades": "NO APLICA",
+            "reacciones adversas": "Mielosupresión, leucopenia, trombocitopenia, encefalopatía, cistitis hemorrágica, hematuria, nefrotoxicidad, náuseas, vómitos, alopecia.",
+            "premedicación requerida": "Individual: ondansetrón y dexametasona. Mesna como protección urinaria."
+        },
+        {
+            "Nombre del medicamento": "IPILIMUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sin diluir o en NaCl 0.9% / Glucosada 5% (1-4 mg/ml)",
+            "dilución del vial liofilizado": "Fco. 50mg/10ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "24 hrs a 25°C o 2-8°C",
+            "dosis máxima guía": "3 mg/kg",
+            "tiempo de infusión": "90´",
+            "excipientes": "Tris hidrocloruro, Cloruro sódico, Manitol, Ácido pentético, Polisorbato 80",
+            "contraindicaciones": "Hipersensibilidad al ipilimumab o excipientes.",
+            "interacciones": "Sin interacciones farmacocinéticas relevantes por CYP450.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Diarrea, colitis, erupción cutánea, prurito, fatiga, hipotiroidismo, hepatitis inmunomediada.",
+            "premedicación requerida": "Dexametasona."
+        },
+        {
+            "Nombre del medicamento": "IRINOTECAN",
+            "tipo de fármaco": "Inhibidores De La Topoisomerasa",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% / Sol. Glucosa 5% 500 mL",
+            "dilución del vial liofilizado": "Fco. 100mg/5ml",
+            "estabilidad del vial cerrado": "Temp ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Sol. Salina 0.9%: 24 hrs (Temp. Amb, NO REFRIGERAR). Sol. Glucosada 5%: 24 hrs Temp. Amb / 48 hrs (2-8°C)",
+            "dosis máxima guía": "350 mg TRISEMANAL",
+            "tiempo de infusión": "60´ a 90´",
+            "excipientes": "Sorbitol (E420), Ácido láctico, Hidróxido de sodio, Ácido clorhídrico.",
+            "contraindicaciones": "Hipersensibilidad, enfermedad intestinal inflamatoria crónica, obstrucción intestinal, lactancia, bilirrubina > 3x LSN.",
+            "interacciones": "Hierba de San Juan (contraindicado), inductores/inhibidores de CYP3A4, bloqueantes neuromusculares.",
+            "incompatibilidades": "No diluir en soluciones alcalinas.",
+            "reacciones adversas": "Diarrea tardía, síndrome colinérgico agudo, neutropenia, náuseas, vómitos, alopecia.",
+            "premedicación requerida": "Ondansetrón, dexametasona y media ampolla de atropina SC."
+        },
+        {
+            "Nombre del medicamento": "MESNA",
+            "tipo de fármaco": "Citoprotectores",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250 mL (impregnación) / 500 mL",
+            "dilución del vial liofilizado": "Sol. Inyectable (ÁMPULA)",
+            "estabilidad del vial cerrado": "Temp. Ambiente. Desechar sobrante",
+            "estabilidad de la mezcla": "Sol. Diluida: 24 hrs a Temp. Amb",
+            "dosis máxima guía": "Dosis 1:1 c/ IFOSFAMIDA",
+            "tiempo de infusión": "30´ a 3 horas",
+            "excipientes": "Edetato de disodio, Hidróxido de sodio",
+            "contraindicaciones": "Hipersensibilidad a compuestos con grupo tiol o sulfonamidas, insuficiencia renal grave.",
+            "interacciones": "Inactiva aminoglucósidos. Falsos positivos en pruebas urinarias de cetonas.",
+            "incompatibilidades": "Incompatible con cisplatino, oxitetraciclina, carbenicilina, eritromicina, aminofilina.",
+            "reacciones adversas": "Dolor de pecho, broncoespasmo, disgeusia, rash eritematoso, urticaria.",
+            "premedicación requerida": "No requiere. Se utiliza como protección urinaria con ifosfamida."
+        },
+        {
+            "Nombre del medicamento": "METOTREXATO",
+            "tipo de fármaco": "Antimetabolitos",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 500mL o 1000mL",
+            "dilución del vial liofilizado": "50mg/10mL | 500mg/25mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ. NO REFRIGERAR",
+            "estabilidad de la mezcla": "Sol. Diluida y vial: 24 hrs Temp. Amb. EQUIPO RADIOPACO",
+            "dosis máxima guía": "1300 mg | IM: 50 mg",
+            "tiempo de infusión": "30 a 60´",
+            "excipientes": "Cloruro de sodio, Hidróxido de sodio, Ácido clorhídrico",
+            "contraindicaciones": "Hipersensibilidad, insuficiencia hepática/renal grave, discrasias sanguíneas, úlceras GI, embarazo y lactancia.",
+            "interacciones": "AINEs, salicilatos, omeprazol/IBP, penicilinas, trimetoprim-sulfametoxazol, óxido nitroso.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Mielosupresión, estomatitis, mucositis, hepatotoxicidad, nefrotoxicidad, neumonitis.",
+            "premedicación requerida": "Ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "MITOMICINA C",
+            "tipo de fármaco": "Productos Naturales",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250 mL o 500 mL",
+            "dilución del vial liofilizado": "5 mg / 10 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ. NO REFRIGERAR",
+            "estabilidad de la mezcla": "Sol. NaCl 0.9%: 12 hrs a Temp. Amb.",
+            "dosis máxima guía": "HIPEC: 40 mg/40mL | 45 mg en 500 mL",
+            "tiempo de infusión": "60´",
+            "excipientes": "Urea",
+            "contraindicaciones": "Hipersensibilidad, lactancia, pancitopenia, diátesis hemorrágica, disfunción renal/hepática/pulmonar.",
+            "interacciones": "Alcaloides de la vinca (toxicidad pulmonar), doxorrubicina, tamoxifeno, piridoxina.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Mielosupresión tardía, síndrome urémico hemolítico, neumonía intersticial, necrosis tisular por extravasación.",
+            "premedicación requerida": "Ondansetrón, dexametasona y difenhidramina."
+        },
+        {
+            "Nombre del medicamento": "MITOXANTRONA",
+            "tipo de fármaco": "Antraciclinas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 50 mL",
+            "dilución del vial liofilizado": "Solución concentrada",
+            "estabilidad del vial cerrado": "15-25°C (7 días) o 2-8°C (15 días). NO CONGELAR",
+            "estabilidad de la mezcla": "Administrar inmediatamente",
+            "dosis máxima guía": "140 mg",
+            "tiempo de infusión": "30´",
+            "excipientes": "Cloruro de sodio, Acetato de sodio, Ácido acético",
+            "contraindicaciones": "Hipersensibilidad, sulfitos, lactancia.",
+            "interacciones": "Otras antraciclinas (cardiotoxicidad), anticoagulantes orales, ciclosporina.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Mielosupresión, cardiotoxicidad (ICC), coloración azul-verdosa de orina/esclerótica, náuseas.",
+            "premedicación requerida": "Ondansetrón y dexametasona."
+        },
+        {
+            "Nombre del medicamento": "NIVOLUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 100 mL (Filtro 0.22 micras)",
+            "dilución del vial liofilizado": "Fco. 100mg/10ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "Temp. Amb.: máx 4 hrs | 2-8°C: 24 hrs",
+            "dosis máxima guía": "1600 mg",
+            "tiempo de infusión": "45´",
+            "excipientes": "Citrato de sodio, Cloruro de sodio, Manitol, Ácido pentético, Polisorbato 80",
+            "contraindicaciones": "Hipersensibilidad al nivolumab o excipientes.",
+            "interacciones": "Evitar corticosteroides sistémicos antes de iniciar el tratamiento.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Fatiga, erupción cutánea, diarrea, hipotiroidismo, neumonitis, colitis, hepatitis inmunomediada.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "OXALIPLATINO",
+            "tipo de fármaco": "Derivados Del Platino",
+            "recomendación de reconstitución": "EXCLUSIVO EN Sol. Glucosada 5% 500 mL",
+            "dilución del vial liofilizado": "50 mg/5 mL | 100mg/10 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Sol. Diluida a temp. Amb.: 24 hrs | Refrigeración 2-8 °C: 48 hrs",
+            "dosis máxima guía": "260 mg",
+            "tiempo de infusión": "120´",
+            "excipientes": "Agua para inyectables",
+            "contraindicaciones": "Hipersensibilidad, lactancia, mielosupresión basal, neuropatía sensorial periférica con deterioro funcional, insuficiencia renal grave.",
+            "interacciones": "Fármacos que prolongan el intervalo QT, vacunas de virus vivos.",
+            "incompatibilidades": "NO diluir con suero salino ni soluciones con iones cloro. NO mezclar con soluciones alcalinas (5-FU). NO usar equipos con aluminio.",
+            "reacciones adversas": "Neuropatía sensorial periférica agravada por el frío, mielosupresión, náuseas, vómitos, diarrea, reacciones alérgicas.",
+            "premedicación requerida": "Individual: Ondansetrón y dexametasona."
+        },
+        {
+            "Nombre del medicamento": "PACLITAXEL",
+            "tipo de fármaco": "Taxanos",
+            "recomendación de reconstitución": "Sol. Glucosada 5% 500mL (< 200 mg) / 1000 mL (≥ 200 mg)",
+            "dilución del vial liofilizado": "Fco. 300mg/50ml | Fco. 30mg/5ml",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Vial en refrigeración 2-8 °C: 24 hrs. Sol. Diluida administrar de inmediato. EQUIPO RADIOPACO",
+            "dosis máxima guía": "550 mg",
+            "tiempo de infusión": "3 horas (Secuencial TIP: 8 horas)",
+            "excipientes": "Solución de albúmina humana (caprilato de sodio y N-acetil-L-triptófano).",
+            "contraindicaciones": "Hipersensibilidad, lactancia, recuento basal de neutrófilos < 1500 células/mm3.",
+            "interacciones": "Inhibidores de CYP2C8 o CYP3A4 (ketoconazol, eritromicina, ritonavir) aumentan toxicidad. Inductores (rifampicina, carbamazepina) reducen eficacia.",
+            "incompatibilidades": "Este medicamento no debe mezclarse con otros.",
+            "reacciones adversas": "Mielosupresión, neutropenia, neuropatía periférica, alopecia, artralgias, mialgias, náuseas, vómitos, reacciones de hipersensibilidad.",
+            "premedicación requerida": "Individual: Dexametasona y difenhidramina."
+        },
+        {
+            "Nombre del medicamento": "PACLITAXEL + ALBÚMINA",
+            "tipo de fármaco": "Taxanos",
+            "recomendación de reconstitución": "Sol. NaCl 0.9%",
+            "dilución del vial liofilizado": "100mg/20mL",
+            "estabilidad del vial cerrado": "Máx 25°C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Vial reconstituido: 8 hrs (2-8°C) | Bolsa: 4 hrs (máx 25°C)",
+            "dosis máxima guía": "300 mg/m²",
+            "tiempo de infusión": "60´",
+            "excipientes": "Solución de albúmina humana (caprilato de sodio, N-acetil-L-triptófano)",
+            "contraindicaciones": "Hipersensibilidad, lactancia, neutrófilos < 1500 células/mm3.",
+            "interacciones": "Inhibidores/inductores de CYP2C8 o CYP3A4.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Neutropenia, neuropatía periférica, alopecia, artralgias, mialgias, fatiga, náuseas.",
+            "premedicación requerida": "Individual: Dexametasona, difenhidramina y ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "PEMBROLIZUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 100 mL",
+            "dilución del vial liofilizado": "Fco. 100mg/4ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8 °C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "Temp. Amb: máx 4 hrs | Refrigeración 2-8 °C: 24 hrs",
+            "dosis máxima guía": "2 mg/kg o 200 mg cada 3 semanas",
+            "tiempo de infusión": "60´",
+            "excipientes": "L-histidina, Sacarosa, Polisorbato 80",
+            "contraindicaciones": "Hipersensibilidad al principio activo o excipientes.",
+            "interacciones": "Evitar corticosteroides sistémicos antes de iniciar el tratamiento.",
+            "incompatibilidades": "Este medicamento no debe mezclarse con otros.",
+            "reacciones adversas": "Fatiga, diarrea, erupción cutánea, hipotiroidismo, neumonitis, colitis, hepatitis inmunomediada.",
+            "premedicación requerida": "Difenhidramina y paracetamol 1 g IV."
+        },
+        {
+            "Nombre del medicamento": "PEMETREXED",
+            "tipo de fármaco": "Antimetabolitos",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 100mL",
+            "dilución del vial liofilizado": "500 mg / 20 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. NO REFRIGERAR",
+            "estabilidad de la mezcla": "Sol. Diluida a Temp. Amb.: 24 hrs. NO REFRIGERAR",
+            "dosis máxima guía": "1000 mg",
+            "tiempo de infusión": "10´",
+            "excipientes": "Tiosulfato de sodio, Propilenglicol, Ácido clorhídrico, Hidróxido de sodio",
+            "contraindicaciones": "Hipersensibilidad, lactancia, vacuna fiebre amarilla.",
+            "interacciones": "AINEs (reducen aclaramiento renal), fármacos nefrotóxicos.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Mielosupresión, fatiga, náuseas, vómitos, erupción cutánea, elevación de transaminasas.",
+            "premedicación requerida": "Individual: Ondansetrón y dexametasona (además de suplementación con ácido fólico y vitamina B12)."
+        },
+        {
+            "Nombre del medicamento": "PERTUZUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250 mL",
+            "dilución del vial liofilizado": "Fco. 420mg/14ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "24 hrs a 2-8°C o 30°C",
+            "dosis máxima guía": "Carga: 840 mg | Mantenimiento: 420 mg",
+            "tiempo de infusión": "45 a 90´",
+            "excipientes": "L-histidina, Sacarosa, Polisorbato 20",
+            "contraindicaciones": "Hipersensibilidad, embarazo.",
+            "interacciones": "Sin interacciones farmacocinéticas relevantes con trastuzumab o taxanos.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Diarrea, alopecia, neutropenia, fatiga, disfunción ventricular izquierda (FEVI).",
+            "premedicación requerida": "N/A"
+        },
+        {
+            "Nombre del medicamento": "RITUXIMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 500 mL AFORADO",
+            "dilución del vial liofilizado": "Fco. 500mg/50ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8 °C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "Sol. Diluida y vial Refrigeración 2-8 °C: 24 hrs",
+            "dosis máxima guía": "750 mg",
+            "tiempo de infusión": "4 horas (Secuencial)",
+            "excipientes": "Citrato sódico, Polisorbato 80, Cloruro de sodio",
+            "contraindicaciones": "Hipersensibilidad a proteínas murinas, infecciones graves y activas, inmunocompromiso grave.",
+            "interacciones": "Anticuerpos humanos anti-murinos (HAMA) pueden incrementar reacciones de hipersensibilidad.",
+            "incompatibilidades": "Este medicamento no debe mezclarse con otros.",
+            "reacciones adversas": "Reacciones relacionadas con la perfusión (fiebre, escalofríos, hipotensión), neutropenia, reactivación de hepatitis B.",
+            "premedicación requerida": "Difenhidramina en la dosis inicial y paracetamol 1 g IV."
+        },
+        {
+            "Nombre del medicamento": "TOPOTECAN",
+            "tipo de fármaco": "Inhibidores De La Topoisomerasa",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250 mL - 500 mL",
+            "dilución del vial liofilizado": "4 mg / 4 mL",
+            "estabilidad del vial cerrado": "Temp. Ambiente. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Administrar lo más pronto posible",
+            "dosis máxima guía": "DU: 4 mg | Semanal 5 días: 1.4 mg diarios",
+            "tiempo de infusión": "30´",
+            "excipientes": "Ácido tartárico, Ácido clorhídrico",
+            "contraindicaciones": "Hipersensibilidad, lactancia, supresión medular grave basal.",
+            "interacciones": "Agentes de platino (interacción dependiente de la secuencia).",
+            "incompatibilidades": "Solo diluir en NaCl 0.9% o Glucosada 5%.",
+            "reacciones adversas": "Mielosupresión grave (neutropenia, trombocitopenia, anemia), náuseas, vómitos, alopecia, fatiga.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "TRASTUZUMAB",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250mL",
+            "dilución del vial liofilizado": "Fco. Ámpula con Diluyente incluido",
+            "estabilidad del vial cerrado": "Refrigeración 2-8 °C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "Vial reconstituido: 28 días (2-8°C). Mezcla: 24 hrs (2-8°C)",
+            "dosis máxima guía": "900 mg",
+            "tiempo de infusión": "90´ primera vez | 60´ 2da | 30´ subsecuentes",
+            "excipientes": "L-histidina, Sacarosa, Polisorbato 80 (E 433)",
+            "contraindicaciones": "Hipersensibilidad al principio activo o excipientes.",
+            "interacciones": "Precaución con antraciclinas por riesgo de cardiotoxicidad aditiva.",
+            "incompatibilidades": "Este medicamento no debe mezclarse con otros.",
+            "reacciones adversas": "Disfunción ventricular izquierda (descenso de FEVI), reacciones relacionadas con la perfusión, náuseas, fatiga, neutropenia.",
+            "premedicación requerida": "Dexametasona, difenhidramina (dosis inicial) y paracetamol 1 g IV."
+        },
+        {
+            "Nombre del medicamento": "TRASTUZUMAB EMTANSINA",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 250 mL",
+            "dilución del vial liofilizado": "Vial 160 mg + 8 ml agua estéril",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ. NO AGITAR",
+            "estabilidad de la mezcla": "24 hrs entre 2°C y 8°C",
+            "dosis máxima guía": "3.6 mg/kg",
+            "tiempo de infusión": "45´",
+            "excipientes": "Succinato disódico, Ácido succínico, Polisorbato 20, Sacarosa",
+            "contraindicaciones": "Hipersensibilidad al trastuzumab emtansina o proteínas murinas.",
+            "interacciones": "Inhibidores potentes de CYP3A4 (claritromicina, ketoconazol, ritonavir) aumentan toxicidad de DM1.",
+            "incompatibilidades": "EXCLUSIVO NaCl 0.9%. NO usar glucosa al 5% (precipita).",
+            "reacciones adversas": "Trombocitopenia, elevación de transaminasas, fatiga, neuropatía periférica, hemorragia.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "TRATUZUMAB SC",
+            "tipo de fármaco": "Terapias Dirigidas",
+            "recomendación de reconstitución": "Listo para usar (Subcutáneo)",
+            "dilución del vial liofilizado": "Fco. 600mg/5ml",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "2-8°C o máx 25°C: 6 hrs",
+            "dosis máxima guía": "600 mg",
+            "tiempo de infusión": "5´",
+            "excipientes": "Hialuronidasa humana recombinante (rHuPH20), L-histidina, Trehalosa, Polisorbato 20",
+            "contraindicaciones": "Hipersensibilidad al trastuzumab o hialuronidasa, disnea grave en reposo.",
+            "interacciones": "Sin interacciones clínicas relevantes con quimioterapia estándar.",
+            "incompatibilidades": "No mezclar con otros medicamentos.",
+            "reacciones adversas": "Reacciones en sitio de inyección, disfunción cardíaca (FEVI), fatiga, artralgia.",
+            "premedicación requerida": "No requiere."
+        },
+        {
+            "Nombre del medicamento": "VINBLASTINA",
+            "tipo de fármaco": "Alcaloides de la Vinca",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 100mL",
+            "dilución del vial liofilizado": "Fco. Ámpula con Diluyente incluido",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Temp. Amb.: 6 hrs | 2-8°C: 24 hrs. NO AGITAR",
+            "dosis máxima guía": "2 - 3 mg",
+            "tiempo de infusión": "10´",
+            "excipientes": "Ácido sulfúrico / Hidróxido sódico",
+            "contraindicaciones": "Hipersensibilidad, leucopenia no tumoral, infecciones bacterianas, administración intratecal (MORTAL), lactancia.",
+            "interacciones": "Mitomicina C (toxicidad pulmonar), fenitoína, inhibidores de CYP3A4.",
+            "incompatibilidades": "No diluir en soluciones fuera de pH 3.5-5.0.",
+            "reacciones adversas": "Leucopenia, alopecia, estreñimiento, íleo paralítico, neuropatía periférica, necrosis por extravasación.",
+            "premedicación requerida": "Individual: Ondansetrón."
+        },
+        {
+            "Nombre del medicamento": "VINCRISTINA",
+            "tipo de fármaco": "Alcaloides de la Vinca",
+            "recomendación de reconstitución": "Sol. NaCl 0.9% 100mL",
+            "dilución del vial liofilizado": "Fco. Ámpula con Diluyente incluido",
+            "estabilidad del vial cerrado": "Refrigeración 2-8°C. PROTEGER DE LA LUZ",
+            "estabilidad de la mezcla": "Temp. Amb.: 8 hrs | 2-8°C: 5 días",
+            "dosis máxima guía": "2 - 3 mg",
+            "tiempo de infusión": "10´",
+            "excipientes": "Manitol, Ácido sulfúrico, Hidróxido de sodio",
+            "contraindicaciones": "Hipersensibilidad, administration intratecal (MORTAL), síndrome de Charcot-Marie-Tooth desmielinizante, embarazo y lactancia.",
+            "interacciones": "Antifúngicos azólicos (itraconazol, ketoconazol), fenitoína, L-asparaginasa, mitomicina C.",
+            "incompatibilidades": "Precipita inmediatamente con furosemida.",
+            "reacciones adversas": "Neuropatía periférica, estreñimiento, íleo paralítico, alopecia, SIADH.",
+            "premedicación requerida": "Individual: Granisetrón (Kytril) 1 ampolla en 250-500 mL de sol. fisiológica."
+        }
+    ];
+
+    let dbList = [...defaultData];
+    let customDrugs = [];
+    let manualSchemeMeds = [];
+    let savedSchemesDB = JSON.parse(localStorage.getItem("equilibrium_saved_schemes") || "[]");
+    let patientsDB = JSON.parse(localStorage.getItem("equilibrium_patients_db") || "{}");
+    let activePatientId = localStorage.getItem("equilibrium_active_patient") || "";
+
+    function getAllDrugs() {
+        return [...dbList, ...customDrugs];
+    }
+
+    function login() {
+        const pwd = document.getElementById("password-input").value;
+        if (pwd === "IJC2026*") {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("app-screen").style.display = "block";
+            document.getElementById("login-error").style.display = "none";
+            refreshDrugSelectors();
+            refreshPatientSelector();
+            if (activePatientId && patientsDB[activePatientId]) {
+                loadPatientState(activePatientId);
+            } else {
+                calculateDose();
+                renderManualMedsTags();
+                renderSavedSchemesList();
+            }
+        } else {
+            document.getElementById("login-error").style.display = "block";
+        }
+    }
+
+    function activatePatient() {
+        const inputVal = document.getElementById("patient-id-input").value.trim();
+        if (!inputVal) return;
+        activePatientId = inputVal;
+        localStorage.setItem("equilibrium_active_patient", activePatientId);
+        if (!patientsDB[activePatientId]) {
+            patientsDB[activePatientId] = {
+                peso: 70.0,
+                talla: 1.70,
+                drug: document.getElementById("calc-drug").value || "",
+                calcType: "sc",
+                dose: 100.0,
+                schemeName: "",
+                dbMeds: [],
+                manualMeds: []
+            };
+        }
+        saveActivePatientData();
+        refreshPatientSelector();
+        loadPatientState(activePatientId);
+    }
+
+    function selectSavedPatient() {
+        const sel = document.getElementById("patient-select").value;
+        if (!sel) return;
+        activePatientId = sel;
+        localStorage.setItem("equilibrium_active_patient", activePatientId);
+        document.getElementById("patient-id-input").value = activePatientId;
+        loadPatientState(activePatientId);
+    }
+
+    function refreshPatientSelector() {
+        const sel = document.getElementById("patient-select");
+        if (!sel) return;
+        sel.innerHTML = `<option value="">-- Pacientes Guardados --</option>`;
+        Object.keys(patientsDB).sort().forEach(pid => {
+            const opt = document.createElement("option");
+            opt.value = pid;
+            opt.textContent = pid;
+            if (pid === activePatientId) opt.selected = true;
+            sel.appendChild(opt);
+        });
+        const pill = document.getElementById("active-patient-pill");
+        if (pill) {
+            pill.textContent = activePatientId ? `Paciente Activo: ${activePatientId}` : "Sin paciente activo (modo temporal)";
+        }
+    }
+
+    function loadPatientState(pid) {
+        const p = patientsDB[pid];
+        if (!p) return;
+        document.getElementById("patient-id-input").value = pid;
+        document.getElementById("active-patient-pill").textContent = `Paciente Activo: ${pid}`;
+        document.getElementById("calc-peso").value = p.peso ?? 70.0;
+        document.getElementById("calc-talla").value = p.talla ?? 1.70;
+        if (p.drug) document.getElementById("calc-drug").value = p.drug;
+        const radio = document.querySelector(`input[name="calc-type"][value="${p.calcType || 'sc'}"]`);
+        if (radio) radio.checked = true;
+        document.getElementById("calc-dose").value = p.dose ?? 100.0;
+        document.getElementById("scheme-name").value = p.schemeName || "";
+
+        const schemeSel = document.getElementById("scheme-select");
+        Array.from(schemeSel.options).forEach(opt => {
+            opt.selected = (p.dbMeds || []).includes(opt.value);
+        });
+        manualSchemeMeds = [...(p.manualMeds || [])];
+
+        calculateDose();
+        renderManualMedsTags();
+        renderScheme();
+        renderSavedSchemesList();
+    }
+
+    function saveActivePatientData() {
+        if (!activePatientId) return;
+        const selectEl = document.getElementById("scheme-select");
+        const selectedNames = selectEl ? Array.from(selectEl.selectedOptions).map(o => o.value) : [];
+        const calcTypeEl = document.querySelector('input[name="calc-type"]:checked');
+        patientsDB[activePatientId] = {
+            peso: parseFloat(document.getElementById("calc-peso").value) || 0,
+            talla: parseFloat(document.getElementById("calc-talla").value) || 0,
+            drug: document.getElementById("calc-drug").value || "",
+            calcType: calcTypeEl ? calcTypeEl.value : "sc",
+            dose: parseFloat(document.getElementById("calc-dose").value) || 0,
+            schemeName: document.getElementById("scheme-name").value || "",
+            dbMeds: selectedNames,
+            manualMeds: [...manualSchemeMeds]
+        };
+        localStorage.setItem("equilibrium_patients_db", JSON.stringify(patientsDB));
+    }
+
+    function quickLogin() {
+        document.getElementById("password-input").value = "IJC2026*";
+        login();
+    }
+
+    function logout() {
+        document.getElementById("password-input").value = "";
+        document.getElementById("app-screen").style.display = "none";
+        document.getElementById("login-screen").style.display = "flex";
+    }
+
+    function showSection(sectionId, btnElement) {
+        document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+        document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
+        document.getElementById("sec-" + sectionId).classList.add("active");
+        btnElement.classList.add("active");
+    }
+
+    function refreshDrugSelectors() {
+        const allDrugs = getAllDrugs();
+        const flatNames = [...new Set(allDrugs.map(d => String(d["Nombre del medicamento"] || "Sin Nombre")))].sort();
+        const types = [...new Set(allDrugs.map(d => String(d["tipo de fármaco"] || "Otros")))].sort();
+
+        const typeFilter = document.getElementById("drug-type-filter");
+        if (typeFilter) {
+            const currentType = typeFilter.value;
+            typeFilter.innerHTML = `<option value="">Todas las categorías (${flatNames.length})</option>`;
+            types.forEach(t => {
+                const opt = document.createElement("option");
+                opt.value = t;
+                opt.textContent = t;
+                typeFilter.appendChild(opt);
+            });
+            typeFilter.value = currentType;
+        }
+
+        ["calc-drug", "scheme-select", "drug-select"].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = "";
+            flatNames.forEach(name => {
+                const opt = document.createElement("option");
+                opt.value = name;
+                opt.textContent = name;
+                el.appendChild(opt);
+            });
+        });
+
+        renderDrugDetails();
+    }
+
+    function filterDrugSelect() {
+        const query = document.getElementById("drug-search").value.toLowerCase().trim();
+        const typeFilter = document.getElementById("drug-type-filter").value;
+        const allDrugs = getAllDrugs();
+        const filteredDrugs = allDrugs.filter(d => {
+            const name = String(d["Nombre del medicamento"] || "").toLowerCase();
+            const type = String(d["tipo de fármaco"] || "Otros");
+            const matchesName = name.includes(query);
+            const matchesType = !typeFilter || type === typeFilter;
+            return matchesName && matchesType;
+        });
+        const flatNames = [...new Set(filteredDrugs.map(d => String(d["Nombre del medicamento"] || "Sin Nombre")))].sort();
+
+        const drugSelect = document.getElementById("drug-select");
+        drugSelect.innerHTML = "";
+        flatNames.forEach(name => {
+            const opt = document.createElement("option");
+            opt.value = name;
+            opt.textContent = name;
+            drugSelect.appendChild(opt);
+        });
+        renderDrugDetails();
+    }
+
+    function renderDrugDetails() {
+        const selected = document.getElementById("drug-select").value;
+        const drug = getAllDrugs().find(d => String(d["Nombre del medicamento"]) === selected);
+        const container = document.getElementById("drug-details-container");
+
+        if (!drug) {
+            container.innerHTML = "<div class='alert alert-warning'>Detalles no encontrados para el medicamento seleccionado.</div>";
+            return;
+        }
+
+        const val = (key) => drug[key] || "N/A";
+
+        container.innerHTML = `
+            <div>
+                <h3 class="section-subtitle">📋 Ficha Fisicoquímica y Estabilidad</h3>
+                <div class="detail-row"><strong>Tipo de Fármaco:</strong> ${val("tipo de fármaco")}</div>
+                <div class="detail-row"><strong>Reconstitución:</strong> ${val("recomendación de reconstitución")}</div>
+                <div class="detail-row"><strong>Dilución del Vial:</strong> ${val("dilución del vial liofilizado")}</div>
+                <div class="detail-row"><strong>Estabilidad del Vial Cerrado:</strong> ${val("estabilidad del vial cerrado")}</div>
+                <div class="detail-row"><strong>Estabilidad de la Mezcla:</strong> ${val("estabilidad de la mezcla")}</div>
+                <div class="detail-row"><strong>Dosis Máxima Guía:</strong> ${val("dosis máxima guía")}</div>
+                <div class="detail-row"><strong>Tiempo de Infusión:</strong> ${val("tiempo de infusión")}</div>
+            </div>
+            <div>
+                <h3 class="section-subtitle" style="color: #FF5252;">⚠️ Alertas de Seguridad y Manejo</h3>
+                <div class="alert alert-error"><strong>Excipientes críticos:</strong> ${val("excipientes")}</div>
+                <div class="alert alert-warning"><strong>Contraindicaciones:</strong> ${val("contraindicaciones")}</div>
+                <div class="alert alert-warning"><strong>Interacciones:</strong> ${val("interacciones")}</div>
+                <div class="alert alert-warning"><strong>Incompatibilidades:</strong> ${val("incompatibilidades")}</div>
+                <div class="alert alert-warning"><strong>Reacciones Adversas (RAM):</strong> ${val("reacciones adversas")}</div>
+                <div class="alert alert-info"><strong>Premedicación Requerida:</strong> ${val("premedicación requerida")}</div>
+            </div>
+        `;
+    }
+
+    function calculateDose() {
+        const peso = parseFloat(document.getElementById("calc-peso").value);
+        const talla = parseFloat(document.getElementById("calc-talla").value);
+        const targetDose = parseFloat(document.getElementById("calc-dose").value) || 0;
+        const calcTypeEl = document.querySelector('input[name="calc-type"]:checked');
+        const calcType = calcTypeEl ? calcTypeEl.value : "sc";
+
+        const selectedDrugName = document.getElementById("calc-drug").value;
+        const drugObj = getAllDrugs().find(d => String(d["Nombre del medicamento"]) === selectedDrugName);
+        const refEl = document.getElementById("calc-drug-ref");
+        if (refEl && drugObj) {
+            refEl.style.display = "block";
+            refEl.innerHTML = `💊 <strong>${selectedDrugName}</strong> — Dosis Máxima Guía: <strong>${drugObj["dosis máxima guía"] || "N/A"}</strong>`;
+        } else if (refEl) {
+            refEl.style.display = "none";
+        }
+
+        // Actualizar tabla resumen
+        const summaryPatient = document.getElementById("summary-patient-id");
+        if (summaryPatient) {
+            summaryPatient.textContent = activePatientId ? activePatientId : "Temporal (Sin expediente)";
+        }
+        const sPeso = document.getElementById("summary-peso");
+        const sTalla = document.getElementById("summary-talla");
+        const sImc = document.getElementById("summary-imc");
+        const sSc = document.getElementById("summary-sc");
+        const sDrug = document.getElementById("summary-drug");
+        const sDose = document.getElementById("summary-dose");
+
+        if (sPeso) sPeso.textContent = (peso ? peso.toFixed(1) : "0.0") + " kg";
+        if (sTalla) sTalla.textContent = (talla ? talla.toFixed(2) : "0.00") + " m";
+        if (sDrug) sDrug.textContent = selectedDrugName || "N/A";
+
+        if (!peso || peso <= 0 || !talla || talla <= 0) {
+            document.getElementById("talla-cm-display").textContent = "Ingrese valores > 0";
+            document.getElementById("talla-cm-display").style.color = "var(--text-muted)";
+            document.getElementById("imc-val").textContent = "-- kg/m²";
+            document.getElementById("imc-category").textContent = "Categoría: Inválido";
+            document.getElementById("sc-val").textContent = "-- m²";
+            document.getElementById("final-dose-val").textContent = "0.00 mg";
+            document.getElementById("formula-text").textContent = "Esperando datos antropométricos válidos (> 0)";
+            if (sImc) sImc.textContent = "--";
+            if (sSc) sSc.textContent = "--";
+            if (sDose) sDose.textContent = "0.00 mg";
+            return;
+        }
+
+        if (talla > 2.5) {
+            document.getElementById("talla-cm-display").textContent = "⚠️ Ingrese la talla en metros (ej. 1.70), no en cm.";
+            document.getElementById("talla-cm-display").style.color = "#FF5252";
+            document.getElementById("imc-val").textContent = "Error de unidad";
+            document.getElementById("imc-category").textContent = "Categoría: Verifique talla en metros";
+            document.getElementById("imc-category").style.color = "#FF5252";
+            document.getElementById("sc-val").textContent = "-- m²";
+            document.getElementById("final-dose-val").textContent = "0.00 mg";
+            document.getElementById("formula-text").textContent = "Corrija la talla a metros para calcular";
+            if (sImc) sImc.textContent = "Error";
+            if (sSc) sSc.textContent = "Error";
+            if (sDose) sDose.textContent = "0.00 mg";
+            return;
+        }
+
+        const tallaCm = talla * 100;
+        document.getElementById("talla-cm-display").textContent = `Equivalente: ${tallaCm.toFixed(1)} cm`;
+        document.getElementById("talla-cm-display").style.color = "var(--text-muted)";
+
+        const sc = Math.sqrt((peso * tallaCm) / 3600);
+        const imc = peso / (talla * talla);
+
+        let imcCat = "Normal";
+        let imcColor = "#69F0AE";
+        if (imc < 18.5) { imcCat = "Bajo peso"; imcColor = "#FFB300"; }
+        else if (imc < 25) { imcCat = "Normal"; imcColor = "#69F0AE"; }
+        else if (imc < 30) { imcCat = "Sobrepeso"; imcColor = "#FF7A00"; }
+        else { imcCat = "Obesidad"; imcColor = "#FF5252"; }
+
+        document.getElementById("imc-val").textContent = imc.toFixed(2) + " kg/m²";
+        const catEl = document.getElementById("imc-category");
+        catEl.textContent = `Categoría: ${imcCat}`;
+        catEl.style.color = imcColor;
+        document.getElementById("sc-val").textContent = sc.toFixed(2) + " m²";
+
+        let finalDose = 0;
+        let formulaText = "";
+
+        if (calcType === "sc") {
+            finalDose = targetDose * sc;
+            formulaText = `Fórmula aplicada: ${targetDose} mg/m² × ${sc.toFixed(2)} m²`;
+        } else {
+            finalDose = targetDose * peso;
+            formulaText = `Fórmula aplicada: ${targetDose} mg/kg × ${peso.toFixed(1)} kg`;
+        }
+
+        document.getElementById("final-dose-val").textContent = finalDose.toFixed(2) + " mg";
+        document.getElementById("formula-text").textContent = formulaText;
+
+        if (sImc) sImc.textContent = imc.toFixed(2) + " kg/m²";
+        if (sSc) sSc.textContent = sc.toFixed(2) + " m²";
+        if (sDose) sDose.textContent = finalDose.toFixed(2) + " mg";
+
+        saveActivePatientData();
+    }
+
+    function addManualMedToScheme() {
+        const input = document.getElementById("scheme-manual-input");
+        const val = input.value.trim();
+        if (!val) return;
+        if (!manualSchemeMeds.includes(val)) {
+            manualSchemeMeds.push(val);
+        }
+        input.value = "";
+        renderManualMedsTags();
+        renderScheme();
+        saveActivePatientData();
+    }
+
+    function removeManualMed(index) {
+        manualSchemeMeds.splice(index, 1);
+        renderManualMedsTags();
+        renderScheme();
+        saveActivePatientData();
+    }
+
+    function renderManualMedsTags() {
+        const container = document.getElementById("manual-meds-list");
+        if (manualSchemeMeds.length === 0) {
+            container.innerHTML = "<small style='color: var(--text-muted);'>No hay medicamentos manuales agregados.</small>";
+            return;
+        }
+        container.innerHTML = manualSchemeMeds.map((m, idx) =>
+            `<span class="badge badge-manual">${m} <span style="cursor:pointer; margin-left:6px; font-weight:bold;" onclick="removeManualMed(${idx})">&times;</span></span>`
+        ).join("");
+    }
+
+    function renderScheme() {
+        const selectEl = document.getElementById("scheme-select");
+        const selectedNames = Array.from(selectEl.selectedOptions).map(o => o.value);
+        const output = document.getElementById("scheme-output");
+
+        const totalCount = selectedNames.length + manualSchemeMeds.length;
+        if (totalCount === 0) {
+            output.innerHTML = `<div class="alert alert-info">Seleccione fármacos o ingrese medicamentos manualmente para iniciar el análisis cruzado de compatibilidades.</div>`;
+            return;
+        }
+
+        const selectedDrugs = getAllDrugs().filter(d => selectedNames.includes(String(d["Nombre del medicamento"])));
+        let html = `<h3>Resumen del Esquema Terapéutico</h3>
+            <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre del medicamento</th>
+                        <th>Tipo de fármaco</th>
+                        <th>Dosis máxima guía</th>
+                        <th>Tiempo de infusión</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+        selectedDrugs.forEach(d => {
+            html += `<tr>
+                <td><strong>${d["Nombre del medicamento"] || "N/A"}</strong></td>
+                <td>${d["tipo de fármaco"] || "N/A"}</td>
+                <td>${d["dosis máxima guía"] || "N/A"}</td>
+                <td>${d["tiempo de infusión"] || "N/A"}</td>
+            </tr>`;
+        });
+        manualSchemeMeds.forEach(m => {
+            html += `<tr>
+                <td><strong>${m}</strong> <span class="badge badge-manual">Manual</span></td>
+                <td>Medicación adicional / Soporte</td>
+                <td>Según indicación clínica</td>
+                <td>Según protocolo</td>
+            </tr>`;
+        });
+        html += `</tbody></table></div>`;
+
+        if (totalCount >= 3) {
+            html += `
+            <div class="alert alert-error" style="margin: 15px 0;">
+                <h4 style="color: #FFCDD2; margin: 0;">⚠️ ALERTA CRÍTICA: POLIFARMACIA DETECTADA (&ge; 3 Fármacos)</h4>
+                <p style="margin-top: 5px;">El esquema actual incluye tres o más fármacos simultáneos. Se requiere vigilar estrictamente la mielosupresión acumulativa, nefrotoxicidad potencial y el desfase correcto de los tiempos de infusión.</p>
+            </div>`;
+        }
+
+        html += `<h3 style="margin-top: 20px;">Desglose y Análisis Cruzado de Seguridad</h3>`;
+        selectedDrugs.forEach(d => {
+            html += `
+            <details>
+                <summary>Interacciones e Incompatibilidades de: ${d["Nombre del medicamento"]}</summary>
+                <p style="margin-bottom: 6px;"><strong>Excipientes:</strong> ${d["excipientes"] || "N/A"}</p>
+                <p style="margin-bottom: 6px;"><strong>Incompatibilidades:</strong> ${d["incompatibilidades"] || "N/A"}</p>
+                <p style="margin-bottom: 6px;"><strong>Interacciones:</strong> ${d["interacciones"] || "N/A"}</p>
+                <p><strong>Reacciones Adversas principales:</strong> ${d["reacciones adversas"] || "N/A"}</p>
+            </details>`;
+        });
+
+        output.innerHTML = html;
+        saveActivePatientData();
+    }
+
+    function saveSchemeToDB() {
+        const schemeName = document.getElementById("scheme-name").value.trim() || ("Esquema #" + (savedSchemesDB.length + 1));
+        const selectEl = document.getElementById("scheme-select");
+        const selectedNames = Array.from(selectEl.selectedOptions).map(o => o.value);
+        const msgEl = document.getElementById("scheme-save-msg");
+
+        if (selectedNames.length === 0 && manualSchemeMeds.length === 0) {
+            msgEl.innerHTML = `<div class="alert alert-error">Agregue al menos un fármaco antes de guardar el esquema.</div>`;
+            return;
+        }
+
+        const newScheme = {
+            id: Date.now(),
+            patientId: activePatientId || "General",
+            name: schemeName,
+            date: new Date().toLocaleDateString("es-MX"),
+            dbMeds: selectedNames,
+            manualMeds: [...manualSchemeMeds]
+        };
+
+        savedSchemesDB.unshift(newScheme);
+        localStorage.setItem("equilibrium_saved_schemes", JSON.stringify(savedSchemesDB));
+        msgEl.innerHTML = `<div class="alert alert-success">Esquema "${schemeName}" guardado en la base de datos (${newScheme.patientId}).</div>`;
+        renderSavedSchemesList();
+    }
+
+    function loadSavedScheme(id) {
+        const scheme = savedSchemesDB.find(s => s.id === id);
+        if (!scheme) return;
+        document.getElementById("scheme-name").value = scheme.name;
+        const selectEl = document.getElementById("scheme-select");
+        Array.from(selectEl.options).forEach(opt => {
+            opt.selected = scheme.dbMeds.includes(opt.value);
+        });
+        manualSchemeMeds = [...scheme.manualMeds];
+        renderManualMedsTags();
+        renderScheme();
+    }
+
+    function deleteSavedScheme(id) {
+        savedSchemesDB = savedSchemesDB.filter(s => s.id !== id);
+        localStorage.setItem("equilibrium_saved_schemes", JSON.stringify(savedSchemesDB));
+        renderSavedSchemesList();
+    }
+
+    function renderSavedSchemesList() {
+        const container = document.getElementById("saved-schemes-list");
+        if (!container) return;
+        if (savedSchemesDB.length === 0) {
+            container.innerHTML = `<div class="alert alert-info">Aún no hay esquemas guardados en la base de datos propia.</div>`;
+            return;
+        }
+        container.innerHTML = savedSchemesDB.map(s => `
+            <div class="saved-scheme-card">
+                <div>
+                    <strong style="font-size: 15px;">${s.name}</strong> <small style="color: var(--text-muted);">(${s.date})</small>
+                    <span class="badge" style="margin-left: 6px;">${s.patientId || "General"}</span>
+                    <div style="margin-top: 6px;">
+                        ${s.dbMeds.map(m => `<span class="badge">${m}</span>`).join("")}
+                        ${s.manualMeds.map(m => `<span class="badge badge-manual">${m}</span>`).join("")}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                    <button type="button" class="btn btn-sm" onclick="loadSavedScheme(${s.id})">Cargar</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteSavedScheme(${s.id})">Eliminar</button>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    function addCustomDrug(event) {
+        event.preventDefault();
+        const name = document.getElementById("add-name").value.trim().toUpperCase();
+        const msgEl = document.getElementById("add-drug-msg");
+
+        if (!name) {
+            msgEl.innerHTML = `<div class="alert alert-error">Debe ingresar al menos el nombre del fármaco.</div>`;
+            return;
+        }
+
+        const newDrug = {
+            "Nombre del medicamento": name,
+            "tipo de fármaco": document.getElementById("add-tipo").value.trim() || "Otros",
+            "recomendación de reconstitución": document.getElementById("add-reconst").value,
+            "dilución del vial liofilizado": document.getElementById("add-dilution").value,
+            "estabilidad del vial cerrado": document.getElementById("add-est-cerrado").value,
+            "estabilidad de la mezcla": document.getElementById("add-est-mezcla").value,
+            "dosis máxima guía": document.getElementById("add-max-dose").value,
+            "tiempo de infusión": document.getElementById("add-inf-time").value,
+            "excipientes": document.getElementById("add-excipientes").value,
+            "contraindicaciones": document.getElementById("add-contraindic").value,
+            "interacciones": document.getElementById("add-interact").value,
+            "incompatibilidades": document.getElementById("add-incompat").value,
+            "reacciones adversas": document.getElementById("add-adv").value,
+            "premedicación requerida": document.getElementById("add-premed").value
+        };
+
+        customDrugs.push(newDrug);
+        refreshDrugSelectors();
+        document.getElementById("add-drug-form").reset();
+        msgEl.innerHTML = `<div class="alert alert-success">¡El medicamento '${name}' ha sido registrado exitosamente en la sesión activa!</div>`;
+        showToast(`Medicamento ${name} agregado`);
+    }
+
+    function showToast(message) {
+        const container = document.getElementById("toast-container");
+        if (!container) return;
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.textContent = "✓ " + message;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transition = "opacity 0.3s ease";
+            setTimeout(() => toast.remove(), 300);
+        }, 2800);
+    }
+
+    function copyDoseSummary() {
+        const patient = activePatientId || "Temporal";
+        const drug = document.getElementById("calc-drug").value || "N/A";
+        const peso = document.getElementById("calc-peso").value;
+        const talla = document.getElementById("calc-talla").value;
+        const sc = document.getElementById("sc-val").textContent;
+        const imc = document.getElementById("imc-val").textContent;
+        const dose = document.getElementById("final-dose-val").textContent;
+        const formula = document.getElementById("formula-text").textContent;
+
+        const text = `EQUILIBRIUM-IJC | Resumen de Dosificación\nPaciente: ${patient}\nFármaco: ${drug}\nPeso: ${peso} kg | Talla: ${talla} m | SC: ${sc} | IMC: ${imc}\nDosis Calculada: ${dose}\n(${formula})`;
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        showToast("Resumen de dosificación copiado al portapapeles");
+    }
+</script>
+
+</body>
+</html>
